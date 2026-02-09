@@ -1,36 +1,41 @@
 "use client";
 
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { Linkedin, Mail, Phone } from "lucide-react";
+import { Linkedin, Mail, Phone, ExternalLink } from "lucide-react";
 
 export default function Footer() {
     return (
-        <footer className="relative bg-brand-navy border-t border-white/5 pt-32 pb-16 overflow-hidden">
+        <footer className="relative bg-brand-navy border-t border-white/5 pt-20 md:pt-32 pb-12 md:pb-16 overflow-hidden">
             
-            {/* EFECTO DE LUZ DRAMÁTICO */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-brand-sky/50 to-transparent" />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-gradient-to-b from-brand-sky/10 via-brand-sky/5 to-transparent blur-3xl rounded-full pointer-events-none" />
+            {/* 1. EFECTOS DE ILUMINACIÓN AMBIENTAL */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-brand-sky/40 to-transparent" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-gradient-to-b from-brand-sky/5 via-transparent to-transparent blur-3xl rounded-full pointer-events-none" />
             
-            {/* PUNTOS DE ACENTO ANIMADOS */}
-            <div className="absolute top-20 right-10 w-2 h-2 bg-brand-sky rounded-full animate-pulse" />
-            <div className="absolute bottom-32 left-20 w-1.5 h-1.5 bg-accent-DEFAULT rounded-full animate-pulse delay-700" />
+            {/* ACENTOS PULSANTES - Solo visibles en Desktop para evitar ruido en móvil */}
+            <div className="hidden lg:block absolute top-20 right-10 w-2 h-2 bg-brand-sky rounded-full animate-pulse shadow-[0_0_10px_#6bccf6]" />
+            <div className="hidden lg:block absolute bottom-32 left-20 w-1.5 h-1.5 bg-accent-DEFAULT rounded-full animate-pulse delay-700 shadow-[0_0_8px_#f59e0b]" />
 
             <div className="container mx-auto px-6 relative z-10">
                 
-                {/* SECCIÓN PRINCIPAL - GRID IMPACTANTE */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-16 mb-20">
+                {/* 2. GRID PRINCIPAL ADAPTATIVO
+                    - Mobile: 1 columna
+                    - Tablet: 2 columnas (grid-cols-2)
+                    - Desktop: 12 columnas para control total
+                */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-16 mb-20">
                     
-                    {/* COLUMNA 1: IDENTIDAD (DESTACADA) */}
-                    <div className="md:col-span-4 flex flex-col items-center md:items-start space-y-6 text-center md:text-left group">
+                    {/* COLUMNA 1: IDENTIDAD (4 de 12 columnas) */}
+                    <div className="lg:col-span-4 flex flex-col items-center md:items-start space-y-8 text-center md:text-left group">
                         <div className="relative">
                             <div className="absolute -inset-4 bg-gradient-to-r from-brand-sky/20 to-accent-DEFAULT/10 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500" />
-                            <Link href="/" className="relative block w-fit transition-transform hover:scale-110">
+                            <Link href="/" className="relative block w-fit transition-transform hover:scale-105 active:scale-95">
                                 <Image
                                     src="https://pub-dc06325214ac4e9a8959030cf5f65654.r2.dev/optimized-xbqfqjzj8smhyksbb8z7.webp"
                                     alt="Asecuritech Logo"
-                                    width={200}
-                                    height={70}
+                                    width={180}
+                                    height={60}
                                     className="opacity-90 group-hover:opacity-100 transition-opacity"
                                 />
                             </Link>
@@ -43,144 +48,98 @@ export default function Footer() {
                             </p>
                             
                             <div className="pt-4 space-y-2">
-                                <p className="text-[11px] font-bold tracking-[0.15em] text-brand-sky/80 uppercase hover:text-brand-sky transition-colors">
+                                <p className="text-[10px] font-black tracking-[0.2em] text-brand-sky/80 uppercase">
                                     © 2026 Asecuritech Inc.
                                 </p>
-                                <p className="text-[10px] text-brand-slate/50">Quito, Ecuador</p>
+                                <p className="text-[10px] text-brand-slate/40 tracking-widest uppercase">Quito, Ecuador</p>
                             </div>
                         </div>
                     </div>
 
-                    {/* COLUMNA 2-3: LINKS ESTRUCTURADOS */}
-                    <div className="md:col-span-4 space-y-12">
-                        
-                        {/* ECOSISTEMA */}
-                        <div>
-                            <h4 className="text-white font-black tracking-[0.25em] uppercase text-[11px] mb-6 relative pb-3">
-                                Ecosistema
-                                <span className="absolute bottom-0 left-0 w-6 h-0.5 bg-gradient-to-r from-brand-sky to-transparent" />
-                            </h4>
-                            <ul className="space-y-3.5 text-sm">
-                                <li>
-                                    <Link href="/sentinel" className="text-brand-slate hover:text-brand-sky transition-all duration-300 flex items-center gap-3 group">
-                                        <span className="w-1 h-1 bg-brand-sky rounded-full opacity-0 group-hover:opacity-100 scale-0 group-hover:scale-100 transition-all shadow-[0_0_8px_#6bccf6]" />
-                                        <span className="group-hover:translate-x-1 transition-transform">Sentinel OS (B2B)</span>
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/zephira" className="text-brand-slate hover:text-accent-DEFAULT transition-all duration-300 flex items-center gap-3 group">
-                                        <span className="w-1 h-1 bg-accent-DEFAULT rounded-full opacity-0 group-hover:opacity-100 scale-0 group-hover:scale-100 transition-all shadow-[0_0_8px_#f59e0b]" />
-                                        <span className="group-hover:translate-x-1 transition-transform">Zephira App (B2C)</span>
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/hardware" className="text-brand-slate hover:text-white transition-all duration-300 flex items-center gap-3 group">
-                                        <span className="w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 scale-0 group-hover:scale-100 transition-all" />
-                                        <span className="group-hover:translate-x-1 transition-transform">Infraestructura LoRaWAN</span>
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/integraciones" className="text-brand-slate hover:text-white transition-all duration-300 flex items-center gap-3 group">
-                                        <span className="w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 scale-0 group-hover:scale-100 transition-all" />
-                                        <span className="group-hover:translate-x-1 transition-transform">SDKs & Integraciones</span>
-                                    </Link>
-                                </li>
-                            </ul>
-                        </div>
-
-                        {/* COMPAÑÍA */}
-                        <div>
-                            <h4 className="text-white font-black tracking-[0.25em] uppercase text-[11px] mb-6 relative pb-3">
-                                Compañía
-                                <span className="absolute bottom-0 left-0 w-6 h-0.5 bg-gradient-to-r from-brand-teal to-transparent" />
-                            </h4>
-                            <ul className="space-y-3.5 text-sm">
-                                <li><Link href="/nosotros" className="text-brand-slate hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Manifiesto ANKA</Link></li>
-                                <li><Link href="/casos" className="text-brand-slate hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Casos de Éxito</Link></li>
-                                <li><Link href="/partners" className="text-brand-slate hover:text-white transition-all duration-300 hover:translate-x-1 inline-block">Programa de Partners</Link></li>
-                                <li><Link href="/contacto" className="text-brand-slate hover:text-brand-teal transition-all duration-300 hover:translate-x-1 inline-block font-semibold">Contacto Corporativo</Link></li>
-                            </ul>
-                        </div>
+                    {/* COLUMNA 2: ECOSISTEMA (2 de 12 columnas) */}
+                    <div className="lg:col-span-2 space-y-8 text-center md:text-left">
+                        <h4 className="text-white font-black tracking-[0.25em] uppercase text-[10px] relative pb-3 inline-block md:block">
+                            Ecosistema
+                            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 w-6 h-0.5 bg-brand-sky" />
+                        </h4>
+                        <ul className="space-y-4 text-sm">
+                            <li>
+                                <Link href="/sentinel" className="text-brand-slate hover:text-brand-sky transition-all flex items-center justify-center md:justify-start gap-3 group">
+                                    <span className="w-1 h-1 bg-brand-sky rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-[0_0_8px_#6bccf6]" />
+                                    <span className="group-hover:translate-x-1 transition-transform">Sentinel OS</span>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="/zephira" className="text-brand-slate hover:text-accent-DEFAULT transition-all flex items-center justify-center md:justify-start gap-3 group">
+                                    <span className="w-1 h-1 bg-accent-DEFAULT rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-[0_0_8px_#f59e0b]" />
+                                    <span className="group-hover:translate-x-1 transition-transform">Zephira App</span>
+                                </Link>
+                            </li>
+                            <li><Link href="/hardware" className="text-brand-slate hover:text-white transition-all block md:hover:translate-x-1">Hardware IoT</Link></li>
+                        </ul>
                     </div>
 
-                    {/* COLUMNA 4: RED DE PROTECCIÓN + CONTACTO */}
-                    <div className="md:col-span-4 space-y-12">
-                        
-                        {/* REDES SOCIALES - IMPACTANTES */}
+                    {/* COLUMNA 3: COMPAÑÍA (2 de 12 columnas) */}
+                    <div className="lg:col-span-2 space-y-8 text-center md:text-left">
+                        <h4 className="text-white font-black tracking-[0.25em] uppercase text-[10px] relative pb-3 inline-block md:block">
+                            Compañía
+                            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 w-6 h-0.5 bg-brand-teal" />
+                        </h4>
+                        <ul className="space-y-4 text-sm text-brand-slate">
+                            <li><Link href="/nosotros" className="hover:text-white transition-all block md:hover:translate-x-1">Manifiesto ANKA</Link></li>
+                            <li><Link href="/partners" className="hover:text-white transition-all block md:hover:translate-x-1">Partners</Link></li>
+                            <li><Link href="/contacto" className="hover:text-brand-teal transition-all font-semibold block md:hover:translate-x-1">Contacto</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* COLUMNA 4: CONTACTO & SOCIAL (4 de 12 columnas) */}
+                    <div className="lg:col-span-4 space-y-10 text-center md:text-left">
                         <div>
-                            <h4 className="text-white font-black tracking-[0.25em] uppercase text-[11px] mb-6 relative pb-3">
+                            <h4 className="text-white font-black tracking-[0.25em] uppercase text-[10px] mb-8 relative pb-3 inline-block md:block">
                                 Red de Protección
-                                <span className="absolute bottom-0 left-0 w-6 h-0.5 bg-gradient-to-r from-brand-sky to-transparent" />
+                                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 w-6 h-0.5 bg-accent-DEFAULT" />
                             </h4>
-                            <div className="flex gap-3">
+                            <div className="flex justify-center md:justify-start gap-4">
                                 {[
-                                    { Icon: Linkedin, label: "LinkedIn", color: "from-blue-400 to-blue-600" },
-                                    { Icon: Mail, label: "Email", color: "from-sky-400 to-sky-600" },
-                                    { Icon: Phone, label: "Phone", color: "from-teal-400 to-teal-600" }
-                                ].map(({ Icon, label, color }) => (
-                                    <div key={label} className="group relative">
-                                        <div className={`absolute -inset-0.5 bg-gradient-to-r ${color} rounded-xl opacity-0 group-hover:opacity-100 blur transition-all duration-300`} />
-                                        <button className="relative p-3.5 rounded-lg bg-brand-navy border border-white/10 hover:border-transparent text-brand-slate hover:text-white transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
-                                            <Icon size={18} className="transition-transform group-hover:scale-110" />
-                                        </button>
-                                    </div>
+                                    { Icon: Linkedin, color: "hover:text-blue-400" },
+                                    { Icon: Mail, color: "hover:text-brand-sky" },
+                                    { Icon: Phone, color: "hover:text-brand-teal" }
+                                ].map(({ Icon, color }, i) => (
+                                    <button key={i} className={`p-3 rounded-xl bg-white/[0.03] border border-white/10 ${color} transition-all hover:-translate-y-1 hover:bg-white/[0.08]`}>
+                                        <Icon size={18} />
+                                    </button>
                                 ))}
                             </div>
                         </div>
 
-                        {/* CONTACTO DIRECTO */}
-                        <div>
-                            <h4 className="text-white font-black tracking-[0.25em] uppercase text-[11px] mb-4 relative pb-3">
-                                Contacto Directo
-                                <span className="absolute bottom-0 left-0 w-6 h-0.5 bg-gradient-to-r from-accent-DEFAULT to-transparent" />
-                            </h4>
-                            <ul className="space-y-2.5 text-[12px]">
-                                <li>
-                                    <a href="tel:+593" className="text-brand-slate hover:text-brand-sky transition-colors flex items-center gap-2 group">
-                                        <span className="text-xs text-brand-sky group-hover:animate-pulse">●</span>
-                                        +593 (2) XXXX-XXXX
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="mailto:info@asecuritech.com" className="text-brand-slate hover:text-brand-sky transition-colors flex items-center gap-2 group">
-                                        <span className="text-xs text-brand-sky group-hover:animate-pulse">●</span>
-                                        info@asecuritech.com
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        {/* LINKS LEGALES */}
-                        <div>
-                            <ul className="space-y-2.5 text-[12px]">
-                                <li><Link href="/privacidad" className="text-brand-slate/60 hover:text-white transition-colors">Política de Privacidad</Link></li>
-                                <li><Link href="/terminos" className="text-brand-slate/60 hover:text-white transition-colors">Términos de Servicio</Link></li>
-                            </ul>
+                        <div className="space-y-4">
+                            <a href="mailto:info@asecuritech.com" className="text-xs text-brand-slate hover:text-brand-sky transition-colors flex items-center justify-center md:justify-start gap-2 group">
+                                <span className="w-1 h-1 bg-brand-sky rounded-full group-hover:animate-ping" />
+                                info@asecuritech.com
+                            </a>
+                            <div className="flex justify-center md:justify-start gap-6 text-[11px] text-brand-slate/50">
+                                <Link href="/privacidad" className="hover:text-white transition-colors">Privacidad</Link>
+                                <Link href="/terminos" className="hover:text-white transition-colors">Términos</Link>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                {/* DIVISOR DINÁMICO */}
-                <div className="relative mb-12">
-                    <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-px bg-gradient-to-r from-transparent via-brand-sky/30 to-transparent" />
-                </div>
+                {/* 3. LÍNEA DIVISORA DINÁMICA */}
+                <div className="relative h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent mb-12" />
                 
-                {/* PIE FINAL - IMPACTANTE */}
-                <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
-                    <div className="space-y-2">
-                        <p className="text-[9px] tracking-[0.25em] text-brand-sky/70 uppercase font-black">Creado por</p>
-                        <p className="text-sm text-white font-bold group hover:text-brand-sky transition-colors cursor-default">
-                            Trei Creatividad Digital <span className="text-brand-slate">2026</span>
+                {/* 4. PIE FINAL (Copyright y Badge) */}
+                <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div className="space-y-2 text-center md:text-left">
+                        <p className="text-[9px] tracking-[0.3em] text-brand-slate uppercase font-black">Powered By</p>
+                        <p className="text-sm text-white font-bold group">
+                            Trei Creatividad Digital <span className="text-brand-slate/40 font-medium">2026</span>
                         </p>
                     </div>
                     
-                    {/* TECH BADGE - MEJORADO */}
-                    <div className="group relative">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-brand-sky/20 to-accent-DEFAULT/20 rounded-full opacity-0 group-hover:opacity-100 blur transition-all duration-300" />
-                        <div className="relative px-6 py-2.5 rounded-full border border-white/10 bg-gradient-to-r from-white/5 to-white/[0.02] text-[9px] text-brand-sky font-black tracking-[0.15em] uppercase shadow-inner group-hover:border-brand-sky/30 transition-all duration-300">
-                            Next.js 15 <span className="text-brand-slate/50 mx-2">●</span> VibeVS 2026
-                        </div>
+                    {/* TECH BADGE */}
+                    <div className="px-6 py-2.5 rounded-full border border-white/5 bg-white/[0.02] text-[9px] text-brand-sky font-black tracking-[0.2em] uppercase shadow-inner">
+                        Next.js 15 <span className="mx-2 text-brand-slate/20">|</span> VibeVS 2026
                     </div>
                 </div>
             </div>
