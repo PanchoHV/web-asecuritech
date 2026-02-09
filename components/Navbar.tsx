@@ -30,7 +30,7 @@ export default function Navbar() {
         {/* LOGO */}
         <div className="relative h-12 w-48">
           <Image
-            src="https://pub-dc06325214ac4e9a8959030cf5f65654.r2.dev/optimized-i4ypfaf74a3pxxpbg6zq.webp"
+            src="https://pub-dc06325214ac4e9a8959030cf5f65654.r2.dev/optimized-xbqfqjzj8smhyksbb8z7.webp"
             alt="Asecuritech Logo"
             fill
             className="object-contain object-left"
