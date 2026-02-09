@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main className="bg-[#050A14] min-h-screen text-white">
       <Navbar />
-      <Hero />
+      <Hero /> 
     </main>
   );
 }

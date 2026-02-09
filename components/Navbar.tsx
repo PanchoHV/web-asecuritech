@@ -28,7 +28,7 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         {/* LOGO */}
-        <div className="relative h-10 w-40">
+        <div className="relative h-12 w-48">
           <Image
             src="https://pub-dc06325214ac4e9a8959030cf5f65654.r2.dev/optimized-i4ypfaf74a3pxxpbg6zq.webp"
             alt="Asecuritech Logo"
