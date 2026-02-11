@@ -1,227 +1,694 @@
 "use client";
 
 import * as React from "react";
-import dynamic from 'next/dynamic';
-import { 
-  ShieldAlert, LayoutDashboard, Building2, FileText, 
-  Users, RefreshCcw, AlertTriangle, ChevronDown 
+import {
+  AlertTriangle,
+  Bell,
+  Building2,
+  ChevronDown,
+  CircleUser,
+  Clock,
+  FileText,
+  Home,
+  LayoutDashboard,
+  MapPin,
+  RefreshCcw,
+  Search,
+  ShieldAlert,
+  Users,
+  Wand2,
 } from "lucide-react";
 
-// --- IMPORTACIÓN DE COMPONENTES UI ---
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
-// --- MAPA DINÁMICO ---
-// Importamos el componente MapContainer de forma dinámica para evitar errores de SSR
-const DynamicMap = dynamic(() => import("./MapContainer"), { 
-  ssr: false,
-  loading: () => <div className="h-full w-full bg-white/5 flex items-center justify-center text-[10px] animate-pulse">Cargando Mapa...</div>
-});
+type IncidenciaEstado = "INICIADO" | "PROCESANDO" | "CERRADO";
+type IncidenciaCategoria = "Emergencia" | "Asistencia" | "Alerta";
 
-const MOCK_INCIDENCIAS = [
+type Incidencia = {
+  id: string;
+  asistencia: string;
+  zona: string;
+  empresa: string;
+  usuario: string;
+  estado: IncidenciaEstado;
+  ultimaActualizacion: string;
+  categoria: IncidenciaCategoria;
+};
+
+const MOCK_INCIDENCIAS: Incidencia[] = [
   {
     id: "1",
     asistencia: "Botón Anti-Secuestro SOS",
-    zona: "Sector Iñaquito, Quito",
-    empresa: "SEGURIDAD CORPORATIVA LATAM",
-    usuario: "ANDRÉS JARAMILLO",
+    zona: "SOS Anti Secuestro Zephira",
+    empresa: "PLAN BÁSICO INDIVIDUAL",
+    usuario: "FRANCISCO VASQ...",
     estado: "INICIADO",
-    ultimaActualizacion: "19:43",
+    ultimaActualizacion: "Hoy",
+    categoria: "Emergencia",
   },
   {
     id: "2",
-    asistencia: "Alerta Médica",
-    zona: "Cumbayá",
-    empresa: "ZEPHIRA FAMILIAR",
-    usuario: "MARÍA ELENA PONCE",
+    asistencia: "Botón SOS GRATUITO",
+    zona: "Zona de Gestión Norte",
+    empresa: "Zephira",
+    usuario: "MICHAEL MUR...",
     estado: "CERRADO",
-    ultimaActualizacion: "14:20",
-  }
+    ultimaActualizacion: "Hoy",
+    categoria: "Asistencia",
+  },
+  {
+    id: "3",
+    asistencia: "Botón SOS GRATUITO",
+    zona: "Zona de Gestión Centro",
+    empresa: "Zephira",
+    usuario: "MICHAEL MUR...",
+    estado: "PROCESANDO",
+    ultimaActualizacion: "Hoy",
+    categoria: "Alerta",
+  },
 ];
 
-// --- SUB-COMPONENTES ---
+const SUPERVISORES = [
+  { value: "sin-asignar", label: "Supervisor sin Asignar" },
+  { value: "sup-1", label: "Supervisor QA 1" },
+  { value: "sup-2", label: "Supervisor QA 2" },
+];
+
+function EstadoBadge({ estado }: { estado: IncidenciaEstado }) {
+  const variant =
+    estado === "INICIADO"
+      ? "default"
+      : estado === "PROCESANDO"
+        ? "secondary"
+        : "outline";
+  return <Badge variant={variant}>{estado}</Badge>;
+}
+
+function CategoriaBadge({ categoria }: { categoria: IncidenciaCategoria }) {
+  const variant =
+    categoria === "Emergencia"
+      ? "destructive"
+      : categoria === "Alerta"
+        ? "secondary"
+        : "outline";
+  return <Badge variant={variant}>{categoria}</Badge>;
+}
 
 function Sidebar() {
-  const item = (Icon: any, label: string, active?: boolean) => (
-    <div className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-all cursor-pointer ${active ? "bg-white/10 text-white font-bold" : "text-slate-500 hover:text-white"}`}>
-      <Icon size={18} />
-      <span>{label}</span>
+  const item = (
+    Icon: React.ComponentType<{ className?: string }>,
+    label: string,
+    active?: boolean,
+    pill?: string
+  ) => (
+    <div
+      className={[
+        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm",
+        active ? "bg-muted font-medium" : "hover:bg-muted/60",
+      ].join(" ")}
+    >
+      <Icon className="h-4 w-4" />
+      <span className="flex-1">{label}</span>
+      {pill ? (
+        <span className="rounded-full bg-red-100 px-2 py-0.5 text-[11px] text-red-700">
+          {pill}
+        </span>
+      ) : null}
     </div>
   );
 
   return (
-    <aside className="hidden h-screen w-[280px] flex-col border-r border-white/5 bg-[#0B1120] md:flex">
-      <div className="px-6 py-8">
-        <img src="https://pub-dc06325214ac4e9a8959030cf5f65654.r2.dev/optimized-xbqfqjzj8smhyksbb8z7.webp" alt="AsecuriTech" className="h-8 w-auto" />
+    <aside className="hidden h-screen w-[260px] flex-col border-r bg-background md:flex">
+      <div className="flex items-center gap-2 px-4 py-4">
+        <div className="grid h-8 w-8 place-content-center rounded-md bg-primary text-primary-foreground">
+          <ShieldAlert className="h-5 w-5" />
+        </div>
+        <div className="text-base font-semibold">AsecuriTech</div>
       </div>
 
-      <div className="px-4 pb-6">
-        <div className="flex items-center gap-3 rounded-2xl bg-white/5 p-4 border border-white/5 shadow-xl">
-          <img src="https://pub-dc06325214ac4e9a8959030cf5f65654.r2.dev/optimized-user.webp" alt="Admin" className="h-10 w-10 rounded-full object-cover" />
-          <div className="min-w-0 text-left">
-            <div className="truncate text-xs font-bold text-white uppercase tracking-tight">SANTIAGO PAZMIÑO</div>
-            <div className="text-[10px] text-brand-sky font-black tracking-widest">SUPERVISOR QUITO</div>
+      <div className="px-4 pb-3">
+        <div className="flex items-center gap-3 rounded-xl bg-muted/40 p-3">
+          <div className="grid h-10 w-10 place-content-center rounded-full bg-muted">
+            <CircleUser className="h-5 w-5" />
+          </div>
+          <div className="min-w-0">
+            <div className="truncate text-sm font-medium">FRANCISCO VASQ...</div>
+            <div className="text-xs text-muted-foreground">SUPER ADMINISTRADOR</div>
           </div>
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 px-4 mt-4">
-        {item(LayoutDashboard, "Dashboard")}
-        {item(FileText, "Incidencias", true)}
-        {item(Building2, "Empresas")}
-        {item(Users, "Usuarios")}
-      </nav>
+      <div className="px-2">
+        <div className="px-3 pb-2 text-xs text-muted-foreground">Menu</div>
+        <nav className="space-y-1 px-2">
+          {item(LayoutDashboard, "Dashboard")}
+          {item(Building2, "Empresas")}
+          {item(Wand2, "Servicios")}
+          {item(FileText, "Incidencias", true, "new")}
+          {item(Users, "Usuarios")}
+        </nav>
+      </div>
+
+      <div className="mt-auto px-4 py-4 text-xs text-muted-foreground">v0.2 • Sentinel UI</div>
     </aside>
   );
 }
 
-function EmergenciaFlowSheet({ selected }: { selected: any }) {
+function EmergenciaFlowSheet({
+  selected,
+  supervisor,
+  estado,
+  comentario,
+  historial,
+  onSupervisor,
+  onEstado,
+  onComentario,
+  onGuardarComentario,
+  onNotificar,
+}: {
+  selected: Incidencia | null;
+  supervisor: string;
+  estado: IncidenciaEstado;
+  comentario: string;
+  historial: string[];
+  onSupervisor: (value: string) => void;
+  onEstado: (value: IncidenciaEstado) => void;
+  onComentario: (value: string) => void;
+  onGuardarComentario: () => void;
+  onNotificar: () => void;
+}) {
   const inc = selected ?? MOCK_INCIDENCIAS[0];
-  return (
-    <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr] p-8 h-full overflow-y-auto pb-20">
-      <div className="space-y-4">
-        <div className="h-[450px] w-full rounded-[2.5rem] border border-white/10 overflow-hidden shadow-2xl relative bg-black/40">
-           <DynamicMap />
-        </div>
-        <div className="bg-white/5 p-4 rounded-2xl border border-white/5 text-[10px] font-mono text-slate-500 flex justify-between">
-           <span>COORD: -0.1807, -78.4678</span>
-           <span className="animate-pulse text-red-500 font-bold">● VIVO</span>
-        </div>
-      </div>
 
-      <div className="space-y-4">
-        <Card className="bg-white/5 border-white/10 rounded-[2rem] overflow-hidden">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4 mb-6">
-              <img src="https://pub-dc06325214ac4e9a8959030cf5f65654.r2.dev/optimized-Botones%20Asischeck%20(5).webp" className="h-14 w-14 rounded-2xl" alt="SOS" />
-              <div>
-                <h3 className="font-bold text-white uppercase text-lg leading-tight">{inc.asistencia}</h3>
-                <span className="text-[10px] text-brand-sky font-black tracking-widest uppercase">{inc.usuario}</span>
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button
+          size="lg"
+          className="fixed bottom-6 right-6 z-50 gap-2 shadow-lg"
+          variant="destructive"
+        >
+          <ShieldAlert className="h-5 w-5" />
+          Emergencia
+        </Button>
+      </SheetTrigger>
+
+      <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-[980px]">
+        <SheetHeader className="pb-4">
+          <SheetTitle className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-red-500" />
+            Gestión guiada de incidencia
+          </SheetTitle>
+          <div className="text-sm text-muted-foreground">
+            Flujo: <b>detalles → ubicación → notificación → supervisor → estado → comentarios</b>.
+          </div>
+        </SheetHeader>
+
+        <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <CardTitle className="text-base">Mapa / Ubicación</CardTitle>
+              <Button variant="ghost" size="sm" className="gap-2">
+                <RefreshCcw className="h-4 w-4" />
+                Refrescar
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className="relative h-[360px] w-full overflow-hidden rounded-xl border bg-gradient-to-br from-slate-100 via-slate-200 to-slate-100">
+                <div className="absolute left-[20%] top-[35%] h-3 w-3 rounded-full bg-red-600 shadow-[0_0_0_8px_rgba(220,38,38,0.2)]" />
+                <div className="absolute right-[25%] top-[20%] h-2 w-2 rounded-full bg-sky-500" />
+                <div className="absolute left-[38%] bottom-[25%] h-2 w-2 rounded-full bg-emerald-500" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,rgba(0,0,0,.08),transparent_25%),radial-gradient(circle_at_70%_55%,rgba(0,0,0,.08),transparent_25%)]" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="rounded-full bg-background/90 px-3 py-1 text-xs text-muted-foreground">
+                    Placeholder — conecta Google Maps/Mapbox aquí
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            <Tabs defaultValue="ticket" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-black/20 p-1">
-                <TabsTrigger value="ticket">INFO</TabsTrigger>
-                <TabsTrigger value="avisar">AVISAR</TabsTrigger>
-                <TabsTrigger value="cierre">CIERRE</TabsTrigger>
+
+              <div className="mt-4">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <MapPin className="h-4 w-4" />
+                  Historial de Ubicación
+                </div>
+                <div className="mt-2 overflow-hidden rounded-xl border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-12">#</TableHead>
+                        <TableHead>Ubicación (Lat, Lng)</TableHead>
+                        <TableHead className="w-[160px]">Exactitud (m)</TableHead>
+                        <TableHead className="w-[180px]">Fecha</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {[
+                        { n: 1, ll: "(-0.13585, -78.46205)", ex: 15.2, f: "2026-02-10 19:43" },
+                        { n: 2, ll: "(-0.13586, -78.46206)", ex: 18.4, f: "2026-02-10 19:43" },
+                        { n: 3, ll: "(-0.13588, -78.46208)", ex: 20.0, f: "2026-02-10 19:43" },
+                      ].map((r) => (
+                        <TableRow key={r.n}>
+                          <TableCell>{r.n}</TableCell>
+                          <TableCell className="font-mono text-xs">{r.ll}</TableCell>
+                          <TableCell>{r.ex}</TableCell>
+                          <TableCell className="text-muted-foreground">{r.f}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="space-y-4">
+            <Card>
+              <CardHeader className="space-y-1">
+                <CardTitle className="text-base">Incidencia</CardTitle>
+                <div className="text-sm text-muted-foreground">Incidencias / Abrir Ticket</div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="grid h-10 w-10 place-content-center rounded-full border bg-red-100 text-red-700">
+                    <ShieldAlert className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="truncate font-medium">{inc.asistencia}</div>
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Categoría:</span>
+                      <CategoriaBadge categoria={inc.categoria} />
+                      <span className="text-xs text-muted-foreground">Estado:</span>
+                      <EstadoBadge estado={estado} />
+                    </div>
+                  </div>
+                </div>
+
+                <Button className="w-full" variant="default">
+                  Ver Detalles
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="space-y-1">
+                <CardTitle className="text-base">Notificación</CardTitle>
+                <div className="text-sm text-muted-foreground">
+                  Servicios disponibles: <b>Email</b>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="rounded-xl border bg-sky-50 p-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Bell className="h-4 w-4" />
+                    Servicios de notificación disponibles: <b>Email</b>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  {[
+                    { name: "Contacto 1", value: "*********806" },
+                    { name: "Contacto 2", value: "*********242" },
+                  ].map((c) => (
+                    <div key={c.name} className="flex items-center justify-between rounded-xl border p-3">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted">
+                          <CircleUser className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium">{c.name}</div>
+                          <div className="text-xs text-muted-foreground">{c.value}</div>
+                        </div>
+                      </div>
+                      <Badge variant="outline">Email</Badge>
+                    </div>
+                  ))}
+                </div>
+
+                <Button className="w-full gap-2" onClick={onNotificar}>
+                  <Bell className="h-4 w-4" />
+                  Notificar
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="space-y-1">
+                <CardTitle className="text-base">Asignación</CardTitle>
+                <div className="text-sm text-muted-foreground">Supervisor y estado operativo</div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <div className="mb-2 text-xs font-medium text-muted-foreground">Supervisor</div>
+                  <Select value={supervisor} onValueChange={onSupervisor}>
+                    <SelectTrigger className="bg-amber-100">
+                      <SelectValue placeholder="Supervisor sin Asignar" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SUPERVISORES.map((s) => (
+                        <SelectItem key={s.value} value={s.value}>
+                          {s.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <div className="mb-2 text-xs font-medium text-muted-foreground">Estado</div>
+                  <Select value={estado} onValueChange={(v) => onEstado(v as IncidenciaEstado)}>
+                    <SelectTrigger className="bg-emerald-100">
+                      <SelectValue placeholder="ESTADO INICIADO" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="INICIADO">ESTADO INICIADO</SelectItem>
+                      <SelectItem value="PROCESANDO">ESTADO PROCESANDO</SelectItem>
+                      <SelectItem value="CERRADO">ESTADO CERRADO</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        <Separator className="my-6" />
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Asistente (instrucciones paso a paso)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="paso-1">
+              <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+                <TabsTrigger value="paso-1">1. Ticket</TabsTrigger>
+                <TabsTrigger value="paso-2">2. Ubicación</TabsTrigger>
+                <TabsTrigger value="paso-3">3. Notificar</TabsTrigger>
+                <TabsTrigger value="paso-4">4. Supervisor</TabsTrigger>
+                <TabsTrigger value="paso-5">5. Estado</TabsTrigger>
+                <TabsTrigger value="paso-6">6. Registro</TabsTrigger>
               </TabsList>
-              <TabsContent value="ticket" className="mt-4">
-                <p className="text-xs text-slate-400 mb-4 italic">"Confirmar apertura de ticket operativo para sector Iñaquito."</p>
-                <Button className="w-full font-black text-xs uppercase tracking-widest py-6">Confirmar Ticket</Button>
+
+              <TabsContent value="paso-1" className="mt-4 space-y-3">
+                <div className="text-sm">
+                  <b>Objetivo:</b> identificar la incidencia y abrir/confirmar ticket operativo.
+                </div>
+                <div className="rounded-xl border p-4 text-sm text-muted-foreground">
+                  1) Selecciona la incidencia (fila en la tabla). 2) “Ver Detalles”. 3) Verifica categoría, usuario, zona y empresa.
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <Input placeholder="Buscar por usuario / empresa (mock)" />
+                  <Button variant="outline" className="gap-2">
+                    <Search className="h-4 w-4" />
+                    Buscar
+                  </Button>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="paso-2" className="mt-4 space-y-3">
+                <div className="text-sm">
+                  <b>Objetivo:</b> validar el punto en mapa + revisar historial de coordenadas y exactitud.
+                </div>
+                <div className="rounded-xl border p-4 text-sm text-muted-foreground">
+                  1) Refresca ubicación. 2) Si la exactitud es mala, espera nuevo ping o solicita confirmación al usuario/canal. 3) Guarda evidencia en historial.
+                </div>
+              </TabsContent>
+
+              <TabsContent value="paso-3" className="mt-4 space-y-3">
+                <div className="text-sm">
+                  <b>Objetivo:</b> notificar contactos del grupo de respuesta (Email/WhatsApp/SMS).
+                </div>
+                <div className="rounded-xl border p-4 text-sm text-muted-foreground">
+                  1) Selecciona canal. 2) Elige contactos. 3) Envía notificación. 4) Registra “Fecha de envío” + resultado (OK/Fail).
+                </div>
+              </TabsContent>
+
+              <TabsContent value="paso-4" className="mt-4 space-y-3">
+                <div className="text-sm">
+                  <b>Objetivo:</b> asignar un supervisor responsable y dejar trazabilidad.
+                </div>
+                <div className="rounded-xl border p-4 text-sm text-muted-foreground">
+                  1) Asigna supervisor. 2) Confirma que queda registrado en “historial de cambios”. 3) Si hay SLA, dispara temporizador.
+                </div>
+              </TabsContent>
+
+              <TabsContent value="paso-5" className="mt-4 space-y-3">
+                <div className="text-sm">
+                  <b>Objetivo:</b> avanzar el estado: INICIADO → PROCESANDO → CERRADO.
+                </div>
+                <div className="rounded-xl border p-4 text-sm text-muted-foreground">
+                  Reglas sugeridas: INICIADO cuando entra. PROCESANDO cuando un humano toma control. CERRADO cuando se resuelve y hay evidencia/nota final.
+                </div>
+              </TabsContent>
+
+              <TabsContent value="paso-6" className="mt-4 space-y-3">
+                <div className="text-sm">
+                  <b>Objetivo:</b> registrar comentario operativo y generar “Historial de Cambios”.
+                </div>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <div className="text-xs font-medium text-muted-foreground">Comentario</div>
+                    <Textarea
+                      placeholder="Ej: Se notificó a Contacto 1 y Contacto 2. Supervisor asignado..."
+                      value={comentario}
+                      onChange={(e) => onComentario(e.target.value)}
+                    />
+                    <Button className="w-full" onClick={onGuardarComentario}>
+                      Guardar
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-xs font-medium text-muted-foreground">Historial</div>
+                    <div className="space-y-2 rounded-xl border p-3 text-sm">
+                      {historial.map((t, i) => (
+                        <div key={`${t}-${i}`} className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-muted-foreground" />
+                          <span>{t}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>
         </Card>
-
-        <Card className="bg-white/5 border-white/10 rounded-[2rem]">
-          <CardContent className="p-6 space-y-4">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Bitácora Operativa</label>
-              <Textarea placeholder="Ingresar novedades..." className="bg-black/20 border-white/10 text-white rounded-xl min-h-[120px]" />
-            </div>
-            <Button className="w-full bg-brand-sky text-brand-navy font-black text-xs uppercase tracking-widest hover:bg-white transition-all py-6">
-              Guardar en Bitácora
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 }
 
-// --- COMPONENTE PRINCIPAL (EXPORT DEFAULT) ---
 export default function IncidenciasDashboard() {
   const [selectedId, setSelectedId] = React.useState<string | null>(MOCK_INCIDENCIAS[0].id);
-  const [isSheetOpen, setIsSheetOpen] = React.useState(false);
+  const [search, setSearch] = React.useState("");
+  const [supervisor, setSupervisor] = React.useState("sin-asignar");
+  const [estado, setEstado] = React.useState<IncidenciaEstado>("INICIADO");
+  const [comentario, setComentario] = React.useState("");
+  const [historial, setHistorial] = React.useState<string[]>([
+    "Incidencia creada por Botón SOS",
+    "Notificación pendiente",
+  ]);
+
+  const filteredIncidencias = React.useMemo(() => {
+    const query = search.toLowerCase();
+    return MOCK_INCIDENCIAS.filter((i) => {
+      return (
+        i.usuario.toLowerCase().includes(query) ||
+        i.empresa.toLowerCase().includes(query) ||
+        i.zona.toLowerCase().includes(query)
+      );
+    });
+  }, [search]);
 
   const selected = React.useMemo(
-    () => MOCK_INCIDENCIAS.find((i) => i.id === selectedId) ?? null,
-    [selectedId]
+    () => filteredIncidencias.find((i) => i.id === selectedId) ?? filteredIncidencias[0] ?? null,
+    [filteredIncidencias, selectedId]
   );
 
+  React.useEffect(() => {
+    if (selected) {
+      setEstado(selected.estado);
+    }
+  }, [selected]);
+
+  const addHistorial = (texto: string) => {
+    setHistorial((prev) => [`${new Date().toLocaleTimeString("es-EC", { hour: "2-digit", minute: "2-digit" })} · ${texto}`, ...prev]);
+  };
+
   return (
-    <div className="flex min-h-screen bg-[#0B1120] text-slate-300">
-      <Sidebar />
-      
-      <main className="flex-1 overflow-y-auto">
-        <header className="flex items-center justify-between border-b border-white/5 px-8 py-6">
-          <div className="text-left">
-            <h1 className="text-2xl font-black text-white tracking-tighter">SENTINEL OS</h1>
-            <p className="text-xs text-slate-500 font-medium">Gestión Crítica de Incidencias • Quito</p>
-          </div>
-          <div className="flex gap-4">
-            <Button variant="outline" className="rounded-xl border-white/10 text-slate-400 gap-2 text-xs">
-              <RefreshCcw size={14} /> Refrescar
-            </Button>
-            <Button 
-              variant="destructive" 
-              className="rounded-xl font-black text-xs uppercase tracking-widest px-6 animate-pulse"
-              onClick={() => { setSelectedId("1"); setIsSheetOpen(true); }}
-            >
-              Simular SOS
-            </Button>
-          </div>
-        </header>
+    <div className="min-h-screen bg-background">
+      <div className="flex">
+        <Sidebar />
 
-        <div className="p-8 text-left">
-           <Card className="bg-white/5 border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl">
-              <CardHeader className="px-8 pt-8">
-                <CardTitle className="text-white">Listado de Alertas Activas</CardTitle>
+        <main className="flex-1">
+          <div className="flex items-center justify-between gap-3 border-b px-4 py-3 md:px-6">
+            <div className="flex items-center gap-2">
+              <Home className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Incidencias</span>
+              <span className="text-sm text-muted-foreground">/</span>
+              <span className="text-sm font-medium">Listado</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" className="gap-2">
+                <RefreshCcw className="h-4 w-4" />
+                Refrescar
+              </Button>
+              <Button variant="outline" className="gap-2">
+                <FileText className="h-4 w-4" />
+                Abrir Ticket
+              </Button>
+              <Button variant="ghost" size="icon" aria-label="Usuario">
+                <CircleUser className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-4 px-4 py-5 md:px-6">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h1 className="text-xl font-semibold">Incidencias</h1>
+                <div className="text-sm text-muted-foreground">
+                  Dashboard interactivo + gestión guiada desde “Emergencia”.
+                </div>
+              </div>
+              <div className="flex w-full gap-2 md:w-[520px]">
+                <Input
+                  placeholder="Buscar usuario / empresa / zona"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                <Button variant="outline" className="gap-2">
+                  <Search className="h-4 w-4" />
+                  Buscar
+                </Button>
+              </div>
+            </div>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                <CardTitle className="text-base">Listado</CardTitle>
+                <div className="text-sm text-muted-foreground">
+                  Mostrar: <b>{filteredIncidencias.length}</b> <ChevronDown className="inline h-4 w-4" />
+                </div>
               </CardHeader>
-              <CardContent className="px-4">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-white/5 hover:bg-transparent">
-                      <TableHead className="text-slate-500 font-bold">ASISTENCIA</TableHead>
-                      <TableHead className="text-slate-500 font-bold">USUARIO</TableHead>
-                      <TableHead className="text-slate-500 font-bold">ZONA</TableHead>
-                      <TableHead className="text-slate-500 font-bold">ESTADO</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {MOCK_INCIDENCIAS.map((i) => (
-                      <TableRow 
-                        key={i.id} 
-                        className="border-white/5 hover:bg-white/5 cursor-pointer"
-                        onClick={() => { setSelectedId(i.id); setIsSheetOpen(true); }}
-                      >
-                        <TableCell className="text-white font-bold">{i.asistencia}</TableCell>
-                        <TableCell className="text-brand-sky font-bold text-xs uppercase">{i.usuario}</TableCell>
-                        <TableCell className="text-slate-400">{i.zona}</TableCell>
-                        <TableCell>
-                           <Badge variant={i.estado === "INICIADO" ? "destructive" : "outline"} className="font-bold uppercase text-[9px]">
-                              {i.estado}
-                           </Badge>
-                        </TableCell>
+              <CardContent>
+                <div className="overflow-hidden rounded-xl border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-10">#</TableHead>
+                        <TableHead>Asistencia</TableHead>
+                        <TableHead>Zona de Gestión</TableHead>
+                        <TableHead>Empresa</TableHead>
+                        <TableHead>Usuario</TableHead>
+                        <TableHead>Estado</TableHead>
+                        <TableHead>Últ. Act.</TableHead>
+                        <TableHead className="w-[140px]">Categoría</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-           </Card>
-        </div>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredIncidencias.map((i, idx) => {
+                        const active = i.id === selected?.id;
+                        return (
+                          <TableRow
+                            key={i.id}
+                            className={active ? "bg-muted/40" : "cursor-pointer"}
+                            onClick={() => setSelectedId(i.id)}
+                          >
+                            <TableCell>{idx + 1}</TableCell>
+                            <TableCell className="font-medium">{i.asistencia}</TableCell>
+                            <TableCell>{i.zona}</TableCell>
+                            <TableCell>{i.empresa}</TableCell>
+                            <TableCell className="truncate">{i.usuario}</TableCell>
+                            <TableCell>
+                              <EstadoBadge estado={active ? estado : i.estado} />
+                            </TableCell>
+                            <TableCell className="text-muted-foreground">{i.ultimaActualizacion}</TableCell>
+                            <TableCell>
+                              <CategoriaBadge categoria={i.categoria} />
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
 
-        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-          <SheetContent side="right" className="w-full sm:max-w-[950px] bg-[#0B1120] border-l border-white/10 p-0 overflow-hidden">
-             <div className="h-full flex flex-col">
-                <div className="px-8 py-8 border-b border-white/5 text-left">
-                   <SheetTitle className="text-white text-3xl font-black flex items-center gap-3 tracking-tighter">
-                      <AlertTriangle className="text-red-500" /> MONITOR OPERATIVO
-                   </SheetTitle>
+                <div className="mt-3 flex items-center justify-between text-sm text-muted-foreground">
+                  <span>
+                    1–{filteredIncidencias.length} de {MOCK_INCIDENCIAS.length}
+                  </span>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">
+                      1
+                    </Button>
+                    <Button variant="ghost" size="sm">
+                      2
+                    </Button>
+                    <Button variant="ghost" size="sm">
+                      3
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex-1">
-                   <EmergenciaFlowSheet selected={selected} />
-                </div>
-             </div>
-          </SheetContent>
-        </Sheet>
-      </main>
+              </CardContent>
+            </Card>
+
+            <div className="text-xs text-muted-foreground">
+              Nota: panel diseñado para conectar API/WebSockets/Maps sin tocar estructura visual.
+            </div>
+          </div>
+
+          <EmergenciaFlowSheet
+            selected={selected}
+            supervisor={supervisor}
+            estado={estado}
+            comentario={comentario}
+            historial={historial}
+            onSupervisor={(value) => {
+              setSupervisor(value);
+              const label = SUPERVISORES.find((s) => s.value === value)?.label ?? value;
+              addHistorial(`Supervisor asignado: ${label}`);
+            }}
+            onEstado={(value) => {
+              setEstado(value);
+              addHistorial(`Estado actualizado: ${value}`);
+            }}
+            onComentario={setComentario}
+            onGuardarComentario={() => {
+              if (!comentario.trim()) return;
+              addHistorial(`Comentario: ${comentario.trim()}`);
+              setComentario("");
+            }}
+            onNotificar={() => addHistorial("Notificación enviada a contactos prioritarios")}
+          />
+        </main>
+      </div>
     </div>
   );
 }
