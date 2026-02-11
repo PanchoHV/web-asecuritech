@@ -20,7 +20,12 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      /* Cambio clave: ahora los alias buscan dentro de /src/ */
+      "@/*": ["./src/*"]
+    }
   },
   "include": [
     "next-env.d.ts",

@@ -49,22 +49,24 @@ const solutions = [
 
 export default function SentinelSolutions() {
   return (
-    <section className="py-20 md:py-32 bg-brand-navy relative overflow-hidden">
+    // AJUSTE: Reducimos padding superior de py-20 a py-10 en mobile para cerrar la brecha con los logos
+    <section className="py-10 md:py-32 bg-brand-navy relative overflow-hidden">
       
-      {/* LUCES AMBIENTALES (Ajustadas para no saturar en móvil) */}
+      {/* LUCES AMBIENTALES (Sin cambios) */}
       <div className="absolute top-1/4 -left-1/4 w-full md:w-1/2 h-1/2 bg-brand-teal/10 md:bg-brand-teal/20 rounded-full blur-[100px] md:blur-[150px] pointer-events-none opacity-50" />
       <div className="absolute bottom-0 -right-1/4 w-full md:w-1/2 h-1/2 bg-brand-sky/10 md:bg-brand-sky/20 rounded-full blur-[100px] md:blur-[150px] pointer-events-none opacity-50" />
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         
-        {/* ENCABEZADO RESPONSIVO */}
+        {/* ENCABEZADO RESPONSIVO COMPACTO */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center max-w-3xl mx-auto mb-16 md:mb-24"
+          // AJUSTE: mb-10 en mobile para reducir el espacio muerto antes del grid
+          className="text-center max-w-3xl mx-auto mb-10 md:mb-24"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-white mb-6 md:mb-8 tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-white mb-4 md:mb-8 tracking-tight leading-tight">
             Tecnología Núcleo para <br className="hidden sm:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-sky via-white to-brand-sky">
               Familias y Corporaciones.
@@ -75,13 +77,8 @@ export default function SentinelSolutions() {
           </p>
         </motion.div>
 
-        {/* GRID ADAPTATIVO:
-            - 1 columna en móvil.
-            - 2 columnas en tablets (md).
-            - 3 columnas en pantallas grandes (lg).
-        */}
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
+        {/* GRID ADAPTATIVO CON GAP COMPRIMIDO */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-10">
           {solutions.map((item, index) => (
             <motion.div
               key={index}
@@ -89,22 +86,25 @@ export default function SentinelSolutions() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
+              // AJUSTE: p-6 en mobile para tarjetas más ágiles
               className={`
-                group relative flex flex-col p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] 
+                group relative flex flex-col p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] 
                 bg-gradient-to-b from-white/[0.08] to-transparent backdrop-blur-xl 
                 border border-white/[0.08]
                 hover:-translate-y-2 transition-all duration-500 ease-out
                 ${item.border} ${item.glow} overflow-hidden
               `}
             >
+              {/* SHIMMER (Sin cambios) */}
               <div className={`
                 absolute inset-0 -z-10 bg-gradient-to-br ${item.shimmerColor} via-transparent to-transparent
                 opacity-0 group-hover:opacity-100 transition-opacity duration-700
                 bg-[length:250%_250%] bg-[0%_0%] group-hover:bg-[100%_100%]
               `} />
 
+              {/* CONTENEDOR DE ÍCONO COMPACTO */}
               <div className={`
-                mb-6 md:mb-8 p-4 md:p-5 rounded-xl md:rounded-2xl w-fit relative z-10
+                mb-4 md:mb-8 p-4 md:p-5 rounded-xl md:rounded-2xl w-fit relative z-10
                 bg-brand-navy/80 border border-white/10 shadow-xl
                 group-hover:scale-110 transition-all duration-500
                 ${item.color}
@@ -114,8 +114,8 @@ export default function SentinelSolutions() {
                 </div>
               </div>
               
-              <h3 className="text-xl md:text-2xl font-bold text-white mb-3 md:mb-4 relative z-10">{item.title}</h3>
-              <p className="text-brand-slate leading-relaxed mb-6 md:mb-8 text-sm md:text-base relative z-10 flex-grow">{item.description}</p>
+              <h3 className="text-xl md:text-2xl font-bold text-white mb-2 md:mb-4 relative z-10">{item.title}</h3>
+              <p className="text-brand-slate leading-relaxed mb-6 md:mb-8 text-[13px] md:text-base relative z-10 flex-grow">{item.description}</p>
 
               <div className={`relative z-10 flex items-center gap-2 text-[10px] md:text-xs font-black tracking-[0.2em] ${item.color} cursor-pointer`}>
                 {item.cta} <ArrowRight size={14} className="group-hover:translate-x-2 transition-transform duration-300" />
