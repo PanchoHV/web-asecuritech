@@ -67,9 +67,6 @@ export default function Hero() {
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-3xl">
-            
-            {/* --- TARJETA SENTINEL (ORGANIZACIONES) --- */}
-            {/* Estado Inicial: Borde Transparente. Hover: Borde Turquesa y Fondo Turquesa suave */}
             <Link 
               href="/sentinel" 
               className="group p-6 md:p-8 rounded-2xl bg-brand-navy/40 backdrop-blur-sm border border-transparent hover:border-brand-teal hover:bg-brand-teal/10 transition-all duration-500 flex flex-col items-center md:items-start"
